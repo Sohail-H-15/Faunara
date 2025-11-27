@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAUNARA – Classify Fauna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body class="bg-jungle min-h-screen flex flex-col">
+    <header class="py-4 px-6 flex items-center justify-between text-emerald-50">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-emerald-500/80 flex items-center justify-center shadow-lg">
+          <span class="text-xl">🐾</span>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold tracking-wide">FAUNARA</h1>
+          <p class="text-[0.65rem] uppercase tracking-[0.18em] text-emerald-100/70">
+            A new way of classifying fauna
+          </p>
+        </div>
+      </div>
+      <button
+        onclick="window.location.href = '/';"
+        class="text-xs px-3 py-1 rounded-full border border-emerald-200/40 text-emerald-100 hover:bg-emerald-100/10"
+      >
+        Back to Jungle
+      </button>
+    </header>
+
+    <main class="flex-1 px-4 pb-6 md:px-8 pt-4">
+      <section class="max-w-5xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-emerald-50 mb-2">FAUNARA</h2>
+        <p class="text-sm text-emerald-100/80 mb-8">
+          Choose how you want to explore: by image, by attributes, or by teaching FAUNARA a brand new species.
+        </p>
+
+        <div class="grid gap-6 lg:grid-cols-[2fr,1.2fr] mb-6">
+          <!-- Left: Classifiers -->
+          <div class="space-y-6 flex flex-col">
+            <!-- Image Classifier -->
+            <div class="card">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="card-title">Image Classifier</h3>
+                <span class="badge">ResNet50</span>
+              </div>
+              <p class="card-subtitle">
+                Upload an animal image. FAUNARA uses ResNet50 to find similar animals in its database using feature matching.
+              </p>
+              <form id="image-form" class="mt-4 space-y-3">
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  class="block w-full text-sm text-emerald-50 file-input"
+                  required
+                />
+                <button type="submit" class="primary-btn w-full md:w-auto">
+                  Classify Image
+                </button>
+              </form>
+
+              <div id="image-result" class="result-panel hidden mt-4"></div>
+            </div>
+
+            <!-- Attribute Classifier -->
+            <div class="card">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="card-title">Attribute Classifier</h3>
+                <span class="badge">Smart Guess</span>
+              </div>
+              <p class="card-subtitle">
+                Describe your animal: legs, skin, diet, and more. FAUNARA will guess the closest match from its knowledge.
+              </p>
+
+              <form id="attributes-form" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <label class="label">Number of legs</label>
+                  <input
+                    type="number"
+                    name="legs"
+                    min="0"
+                    class="input"
+                    placeholder="e.g., 4"
+                  />
+                </div>
+                <div>
+                  <label class="label">Skin / Covering</label>
+                  <select name="skin" class="input">
+                    <option value="">Select…</option>
+                    <option value="fur">Fur</option>
+                    <option value="feathers">Feathers</option>
+                    <option value="scales">Scales</option>
+                    <option value="skin">Bare skin</option>
+                    <option value="shell">Shell</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="label">Diet</label>
+                  <select name="diet" class="input">
+                    <option value="">Select…</option>
+                    <option value="herbivore">Herbivore</option>
+                    <option value="carnivore">Carnivore</option>
+                    <option value="omnivore">Omnivore</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="label">Can it fly?</label>
+                  <select name="can_fly" class="input">
+                    <option value="">Select…</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="label">Can it swim?</label>
+                  <select name="can_swim" class="input">
+                    <option value="">Select…</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="label">Activity</label>
+                  <select name="activity" class="input">
+                    <option value="">Select…</option>
+                    <option value="diurnal">Diurnal (day)</option>
+                    <option value="nocturnal">Nocturnal (night)</option>
+                  </select>
+                </div>
+              </form>
+              <div class="mt-3">
+                <button id="attributes-submit" class="secondary-btn w-full md:w-auto">
+                  Guess Animal
+                </button>
+              </div>
+
+              <div id="attributes-result" class="result-panel hidden mt-4"></div>
+            </div>
+          </div>
+
+          <!-- Right: Improve Faunara -->
+          <div class="card lg:sticky lg:top-4 lg:self-start">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="card-title">Improve Faunara</h3>
+              <span class="badge badge-alt">Learning Mode</span>
+            </div>
+            <p class="card-subtitle">
+              Add new species to FAUNARA. Every contribution makes the classifier smarter for future explorers.
+            </p>
+
+            <form id="improve-form" class="mt-4 space-y-3 text-sm">
+              <div>
+                <label class="label">Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  class="input"
+                  placeholder="e.g., Red Panda"
+                  required
+                />
+              </div>
+              <div>
+                <label class="label">Habitat</label>
+                <textarea
+                  name="habitat"
+                  rows="2"
+                  class="input resize-none"
+                  placeholder="Where does it usually live?"
+                ></textarea>
+              </div>
+              <div>
+                <label class="label">Facts</label>
+                <textarea
+                  name="facts"
+                  rows="3"
+                  class="input resize-none"
+                  placeholder="Fun facts, behaviours, or any special notes."
+                ></textarea>
+              </div>
+              <div>
+                <label class="label">Attributes</label>
+                <button
+                  type="button"
+                  id="toggle-attributes-btn"
+                  class="w-full text-left px-4 py-2.5 rounded-lg border border-emerald-400/50 bg-emerald-900/20 text-emerald-100 hover:bg-emerald-900/30 transition-colors text-sm flex items-center justify-between"
+                >
+                  <span id="attributes-toggle-text">Click to select attributes</span>
+                  <span class="ml-2">▼</span>
+                </button>
+                <div id="attributes-form-container" class="hidden mt-3 p-3 rounded-lg bg-emerald-900/10 border border-emerald-400/30">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <label class="label">Number of legs</label>
+                      <input
+                        type="number"
+                        id="improve-legs"
+                        min="0"
+                        class="input"
+                        placeholder="e.g., 4"
+                      />
+                    </div>
+                    <div>
+                      <label class="label">Skin / Covering</label>
+                      <select id="improve-skin" class="input">
+                        <option value="">Select…</option>
+                        <option value="fur">Fur</option>
+                        <option value="feathers">Feathers</option>
+                        <option value="scales">Scales</option>
+                        <option value="skin">Bare skin</option>
+                        <option value="shell">Shell</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">Diet</label>
+                      <select id="improve-diet" class="input">
+                        <option value="">Select…</option>
+                        <option value="herbivore">Herbivore</option>
+                        <option value="carnivore">Carnivore</option>
+                        <option value="omnivore">Omnivore</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">Can it fly?</label>
+                      <select id="improve-can_fly" class="input">
+                        <option value="">Select…</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">Can it swim?</label>
+                      <select id="improve-can_swim" class="input">
+                        <option value="">Select…</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">Activity</label>
+                      <select id="improve-activity" class="input">
+                        <option value="">Select…</option>
+                        <option value="diurnal">Diurnal (day)</option>
+                        <option value="nocturnal">Nocturnal (night)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="label">Image (optional)</label>
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  class="block w-full text-emerald-50 file-input"
+                />
+              </div>
+              <button type="submit" class="primary-btn w-full">
+                Add to Faunara
+              </button>
+            </form>
+
+            <div id="improve-result" class="result-panel hidden mt-4"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Success Modal (for Improve Faunara) -->
+    <div id="success-modal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <button id="close-modal" class="modal-close">×</button>
+        <h3 class="modal-title">Animal Added Successfully!</h3>
+        <div id="modal-body" class="modal-body">
+          <!-- Content will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Classification Modal -->
+    <div id="classification-modal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <button id="close-classification-modal" class="modal-close">×</button>
+        <h3 class="modal-title" id="classification-modal-title">Classification Result</h3>
+        <div id="classification-modal-body" class="modal-body">
+          <!-- Content will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+  </body>
+</html>
+
+
